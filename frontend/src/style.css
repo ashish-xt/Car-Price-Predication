@@ -1,0 +1,75 @@
+/* Background Image */
+.page-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background: url("https://www.motortrend.com/uploads/sites/5/2020/11/2021-MotorTrend-Car-of-the-Year-group-shot-1.jpg")
+    no-repeat center center/cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Transparent Form */
+.container {
+  width: 350px;
+  padding: 20px;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  background: rgba(0, 0, 0, 0.6); /* Dark transparent */
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  color: white;
+}
+
+h2 {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  text-align: left;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+input,
+select,
+button {
+  width: 100%;
+  padding: 8px;
+  margin: 5px 0;
+  border: none;
+  border-radius: 5px;
+}
+
+input,
+select {
+  background: rgba(255, 255, 255, 0.7);
+  color: black;
+}
+
+button {
+  background: blue;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: darkblue;
+}
+
+/* Price Tag Over a Car */
+.price-tag {
+  position: absolute;
+  top: 40%;
+  left: 65%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 0, 0.8);
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 20px;
+  font-weight: bold;
+  color: black;
+}
