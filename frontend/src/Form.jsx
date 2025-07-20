@@ -29,7 +29,8 @@ const Form2 = () => {
   const handlePredictClick = (event) => {
     event.preventDefault();
     setIsLoading(true);
-    fetch("http://localhost:5000/predict", {
+    // http://localhost:5000/predict
+    fetch("https://car-price-predication.onrender.com", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
