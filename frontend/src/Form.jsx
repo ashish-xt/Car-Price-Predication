@@ -30,7 +30,7 @@ const Form2 = () => {
     event.preventDefault();
     setIsLoading(true);
     // http://localhost:5000/predict
-    fetch("https://car-price-predication.onrender.com", {
+    fetch("https://car-price-predication.onrender.com/predict", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
