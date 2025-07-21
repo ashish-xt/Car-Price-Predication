@@ -1,10 +1,8 @@
 import React, { useState } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
 import "./style.css";
 
-const Form2 = () => {
+const Form = () => {
   const [isLoading, setIsLoading] = useState(false);
-
   const [formData, setFormData] = useState({
     Year: "",
     Kms_Driven: "",
@@ -14,27 +12,21 @@ const Form2 = () => {
     Owner: "",
     Brand_Name: "",
   });
-
   const [result, setResult] = useState("");
   const [showSpan, setShowSpan] = useState(false);
 
   const handleChange = (event) => {
-    const value = event.target.value;
-    const name = event.target.name;
-    let inputData = { ...formData };
-    inputData[name] = value;
-    setFormData(inputData);
+    const { name, value } = event.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handlePredictClick = (event) => {
     event.preventDefault();
     setIsLoading(true);
-    // http://localhost:5000/predict
+
     fetch("https://car-price-predication.onrender.com/predict", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         year: formData.Year,
         km_driven: formData.Kms_Driven,
@@ -47,23 +39,18 @@ const Form2 = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data.Prediction) {
-          setResult(data.Prediction[0]);
-        } else {
-          setResult("Error in prediction");
-        }
-        setIsLoading(false);
+        setResult(data.Prediction?.[0] || "Error in prediction");
         setShowSpan(true);
+        setIsLoading(false);
       })
       .catch((error) => {
         console.error("Error:", error);
         setResult("Error in prediction");
-        setIsLoading(false);
         setShowSpan(true);
+        setIsLoading(false);
       });
   };
 
-  // Function to format the result in Indian price format
   const formatPrice = (price) => {
     return new Intl.NumberFormat("en-IN", {
       style: "currency",
@@ -71,65 +58,73 @@ const Form2 = () => {
       maximumFractionDigits: 0,
     }).format(price);
   };
+
+  // Add warning state
+  const [yearWarning, setYearWarning] = useState("");
+
+  // Update handleChange to check year
+  const handleChangeWithYearCheck = (event) => {
+    const { name, value } = event.target;
+    if (name === "Year") {
+      if (value === "2019") {
+        setYearWarning("Please enter a year less than 2019.");
+      } else if (value && Number(value) < 2003) {
+        setYearWarning("Please enter a year greater than 2003.");
+      } else {
+        setYearWarning("");
+      }
+    }
+    handleChange(event);
+  };
+
   return (
     <div
-      className="d-flex align-items-center justify-content-center vh-100"
+      className="flex justify-center items-center h-screen w-full bg-cover bg-center bg-no-repeat font-poppins"
       style={{
-        backgroundImage: `url(
-          "https://www.motortrend.com/uploads/sites/5/2020/11/2021-MotorTrend-Car-of-the-Year-group-shot-1.jpg?w=768&width=768&q=75&format=webp"
-        )`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        width: "100vw",
-        fontFamily: "Work Sans, sans-serif", // Applying Work Sans font globally
+        backgroundImage:
+          "url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1500&q=80')",
       }}
     >
-      <div
-        className="p-5 shadow-lg rounded"
-        style={{
-          background: "rgba(0, 0, 0, 0.5)", // Transparent Black Background
-          width: "90%",
-          maxWidth: "500px", // Increased form width
-          color: "white",
-          fontFamily: "Work Sans, sans-serif", // Work Sans applied
-        }}
-      >
-        <h2 className="text-center mb-4">Car Price Prediction</h2>
-        <form method="post" acceptCharset="utf-8" name="Modelform">
-          <div className="mb-3">
-            <label className="form-label">Year of Purchase</label>
+      <div className="w-full max-w-4xl bg-white bg-opacity-90 p-6 rounded-lg shadow-xl animate-fadeIn">
+        <h2 className="text-3xl font-bold text-center mb-6">
+          Car Price Prediction
+        </h2>
+        <form
+          onSubmit={handlePredictClick}
+          className="grid grid-cols-1 md:grid-cols-2 gap-4"
+        >
+          <div>
+            <label className="block mb-1 font-medium">Year of Purchase</label>
             <input
               type="number"
-              className="form-control"
-              id="Year"
               name="Year"
               value={formData.Year}
-              onChange={handleChange}
-              placeholder="Enter Year of Purchase "
+              onChange={handleChangeWithYearCheck}
+              className="w-full border border-gray-300 p-2 rounded-md"
+              placeholder="Enter Year"
             />
+            {yearWarning && (
+              <span className="text-red-600 text-sm">{yearWarning}</span>
+            )}
           </div>
-          <div className="mb-3">
-            <label className="form-label">Kilometers Driven</label>
+          <div>
+            <label className="block mb-1 font-medium">Kilometers Driven</label>
             <input
               type="number"
-              className="form-control"
-              id="Kms_Driven"
               name="Kms_Driven"
               value={formData.Kms_Driven}
               onChange={handleChange}
-              placeholder="Enter the kilometres driven "
+              className="w-full border border-gray-300 p-2 rounded-md"
+              placeholder="Enter KM Driven"
             />
           </div>
-          <div className="mb-3">
-            <label className="form-label">Fuel Type</label>
+          <div>
+            <label className="block mb-1 font-medium">Fuel Type</label>
             <select
-              className="form-select"
-              id="Fuel_Type"
               name="Fuel_Type"
               value={formData.Fuel_Type}
               onChange={handleChange}
-              required
+              className="w-full border border-gray-300 p-2 rounded-md"
             >
               <option value="" disabled>
                 Select
@@ -139,15 +134,13 @@ const Form2 = () => {
               <option value="CNG">CNG</option>
             </select>
           </div>
-          <div className="mb-3">
-            <label className="form-label">Seller Type</label>
+          <div>
+            <label className="block mb-1 font-medium">Seller Type</label>
             <select
-              className="form-select"
-              id="Seller_Type"
               name="Seller_Type"
               value={formData.Seller_Type}
               onChange={handleChange}
-              required
+              className="w-full border border-gray-300 p-2 rounded-md"
             >
               <option value="" disabled>
                 Select
@@ -156,15 +149,13 @@ const Form2 = () => {
               <option value="Individual">Individual</option>
             </select>
           </div>
-          <div className="mb-3">
-            <label className="form-label">Transmission Type</label>
+          <div>
+            <label className="block mb-1 font-medium">Transmission</label>
             <select
-              className="form-select"
-              id="Transmission"
               name="Transmission"
               value={formData.Transmission}
               onChange={handleChange}
-              required
+              className="w-full border border-gray-300 p-2 rounded-md"
             >
               <option value="" disabled>
                 Select
@@ -173,54 +164,50 @@ const Form2 = () => {
               <option value="Automatic">Automatic</option>
             </select>
           </div>
-          <div className="mb-3">
-            <label className="form-label">Number of Owners</label>
+          <div>
+            <label className="block mb-1 font-medium">Number of Owners</label>
             <input
               type="number"
-              className="form-control"
-              id="Owner"
               name="Owner"
               value={formData.Owner}
               onChange={handleChange}
-              placeholder="Enter the number of Owner "
+              className="w-full border border-gray-300 p-2 rounded-md"
+              placeholder="Enter Number of Owners"
             />
           </div>
-          <div className="mb-3">
-            <label className="form-label">Brand Name</label>
+          <div className="md:col-span-2">
+            <label className="block mb-1 font-medium">Brand Name</label>
             <input
               type="text"
-              className="form-control"
-              id="Brand_Name"
               name="Brand_Name"
               value={formData.Brand_Name}
               onChange={handleChange}
+              className="w-full border border-gray-300 p-2 rounded-md"
               placeholder="Enter Brand Name"
             />
           </div>
-          <button
-            type="submit"
-            className="btn btn-primary w-100"
-            disabled={isLoading}
-            onClick={!isLoading ? handlePredictClick : null}
-          >
-            Predict Price
-          </button>
+          <div className="md:col-span-2">
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out"
+            >
+              {isLoading ? "Predicting..." : "Predict Price"}
+            </button>
+          </div>
         </form>
-        <br />
-        <h4>
-          {showSpan && (
-            <span id="prediction">
-              {result && result !== "Error in prediction" ? (
-                <p> The Predicted Price is {formatPrice(result)}</p>
-              ) : (
-                <p>Please fill out each field in the form completely</p>
-              )}
-            </span>
-          )}
-        </h4>
+        {showSpan && (
+          <div className="mt-4 text-center text-lg font-semibold">
+            {result && result !== "Error in prediction" ? (
+              <p>The Predicted Price is {formatPrice(result)}</p>
+            ) : (
+              <p>Please fill out each field in the form completely</p>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
-export default Form2;
+export default Form;
